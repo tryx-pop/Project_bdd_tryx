@@ -1,22 +1,8 @@
 /* eslint-disable no-console */
 import chalk from "chalk"
-import { readFile, writeFile } from "node:fs/promises"
+import { readDatabase } from "./db/readDatabase.js"
+import { writeDatabase } from "./db/writeDatabase.js"
 
-const DB_PATH = "./db.json"
-const readDatabase = async () => {
-  try {
-    const json = await readFile(DB_PATH, { encoding: "utf-8" })
-
-    return JSON.parse(json)
-  } catch (err) {
-    return []
-  }
-}
-const writeDatabase = async (db) => {
-  const json = JSON.stringify(db)
-
-  await writeFile(DB_PATH, json, { encoding: "utf-8" })
-}
 const formatTodo = (description, index) =>
   `${chalk.bgBlue(` ${String(index).padStart(4, " ")} `)} ${description}`
 const printTodo = (description, index) =>
