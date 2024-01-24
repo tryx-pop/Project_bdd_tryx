@@ -1,17 +1,17 @@
 import { readDatabase } from "@/db/readDatabase"
 
 export const getServerSideProps = async () => {
-  const todos = await readDatabase()
+  const { todos } = await readDatabase()
 
   return {
-    props: { todos },
+    props: { todos: Object.values(todos) },
   }
 }
 const TodosPage = ({ todos }) => (
   <ul className="flex flex-col gap-4">
-    {todos.map((todo, index) => (
-      <li key={index}>
-        [{index}] {todo}
+    {todos.map(({ id, description, isDone }) => (
+      <li key={id}>
+        <input type="checkbox" checked={isDone} /> #{id} {description}
       </li>
     ))}
   </ul>

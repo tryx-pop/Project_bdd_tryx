@@ -6,7 +6,10 @@ const App = ({ Component, pageProps }) => (
       <div className="mx-auto max-w-5xl p-4 flex justify-between items-center">
         <span>TODOS</span>
         <nav>
-          <ul>
+          <ul className="flex gap-4">
+            <li>
+              <a href="/todos/create">Create</a>
+            </li>
             <li>
               <a href="/todos">List</a>
             </li>
