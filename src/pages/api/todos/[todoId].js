@@ -21,10 +21,12 @@ const handle = async (req, res) => {
 
   // Update (item) => PATCH /todos/:todoId
   if (req.method === "PATCH") {
-    const description = req.body.description?.trim()
+    const description = req.body.description?.trim() || todo.description
+    const isDone = req.body.isDone ?? todo.isDone
     const updatedTodo = {
       ...todo,
-      description: description || todo.description,
+      description,
+      isDone,
     }
 
     await writeDatabase({

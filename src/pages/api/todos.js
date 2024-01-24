@@ -25,6 +25,7 @@ const handle = async (req, res) => {
     const newTodo = {
       id: newLastId,
       description,
+      isDone: false,
     }
 
     await writeDatabase({
