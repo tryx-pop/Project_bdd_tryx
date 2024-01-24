@@ -2,16 +2,11 @@ import { readDatabase } from "@/db/readDatabase"
 import { writeDatabase } from "@/db/writeDatabase"
 
 const handle = async (req, res) => {
-  const todos = await readDatabase()
+  const db = await readDatabase()
 
   // Read (collection) => GET /todos
   if (req.method === "GET") {
-    res.send(
-      todos.map((description, index) => ({
-        index,
-        description,
-      })),
-    )
+    res.send(Object.values(db.todos))
 
     return
   }
@@ -26,14 +21,21 @@ const handle = async (req, res) => {
       return
     }
 
-    const newTodos = [...todos, description]
-    const index = newTodos.length - 1
-
-    await writeDatabase(newTodos)
-    res.send({
-      index,
+    const newLastId = db.lastId + 1
+    const newTodo = {
+      id: newLastId,
       description,
+    }
+
+    await writeDatabase({
+      ...db,
+      lastId: newLastId,
+      todos: {
+        ...db.todos,
+        [newLastId]: newTodo,
+      },
     })
+    res.send(newTodo)
 
     return
   }

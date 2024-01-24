@@ -3,8 +3,8 @@ import { writeDatabase } from "@/db/writeDatabase"
 
 const handle = async (req, res) => {
   const todoId = Number.parseInt(req.query.todoId, 10)
-  const todos = await readDatabase()
-  const todo = todos[todoId]
+  const db = await readDatabase()
+  const todo = db.todos[todoId]
 
   if (!todo) {
     res.status(404).send({ error: "Not found" })
@@ -14,44 +14,42 @@ const handle = async (req, res) => {
 
   // Read (item) => GET /todos/:todoId
   if (req.method === "GET") {
-    res.send({
-      id: todoId,
-      description: todo,
-    })
+    res.send(todo)
 
     return
   }
 
   // Update (item) => PATCH /todos/:todoId
   if (req.method === "PATCH") {
-    const description = req.body.description.trim()
-
-    if (!description) {
-      res.status(422).send({ error: "Invalid argument `description`" })
-
-      return
+    const description = req.body.description?.trim()
+    const updatedTodo = {
+      ...todo,
+      description: description || todo.description,
     }
 
-    const newTodos = todos.with(todoId, description)
-
-    await writeDatabase(newTodos)
-    res.send({
-      index: todoId,
-      description,
+    await writeDatabase({
+      ...db,
+      todos: {
+        ...db.todos,
+        [todoId]: updatedTodo,
+      },
     })
+    res.send(updatedTodo)
 
     return
   }
 
   // Delete (item) => DELETE /todos/:todoId
   if (req.method === "DELETE") {
-    const newTodos = todos.filter((_, index) => index !== todoId)
+    const {
+      todos: { [todoId]: todoToBeDelete, ...todos },
+    } = db
 
-    await writeDatabase(newTodos)
-    res.send({
-      id: todoId,
-      description: todo,
+    await writeDatabase({
+      ...db,
+      todos,
     })
+    res.send(todoToBeDelete)
 
     return
   }

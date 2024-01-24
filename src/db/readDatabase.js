@@ -7,6 +7,9 @@ export const readDatabase = async () => {
 
     return JSON.parse(json)
   } catch (err) {
-    return []
+    return {
+      lastId: 0,
+      todos: {},
+    }
   }
 }
