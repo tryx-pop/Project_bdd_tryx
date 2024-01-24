@@ -1,12 +1,28 @@
 /* eslint-disable no-console */
 import chalk from "chalk"
-import { readDatabase } from "./db/readDatabase.js"
-import { writeDatabase } from "./db/writeDatabase.js"
+import {
+  createTodo,
+  deleteTodo,
+  readTodo,
+  readTodos,
+  updateTodo,
+} from "./db/crud.js"
 
-const formatTodo = (description, index) =>
-  `${chalk.bgBlue(` ${String(index).padStart(4, " ")} `)} ${description}`
-const printTodo = (description, index) =>
-  console.log(formatTodo(description, index))
+const parseTodoId = (rawTodoId) => {
+  const todoId = Number.parseInt(rawTodoId, 10)
+
+  if (!todoId) {
+    console.error("Error: missing todo ID")
+    process.exit(2)
+  }
+
+  return todoId
+}
+const formatTodo = ({ id, description, isDone }) =>
+  (isDone ? chalk.strikethrough : (x) => x)(
+    `${chalk.bgBlue(` ${String(id).padStart(4, " ")} `)} ${description}`,
+  )
+const printTodo = (todo) => console.log(formatTodo(todo))
 const [commandName, ...args] = process.argv.slice(2)
 const commands = {
   add: async (rawDescription) => {
@@ -17,37 +33,37 @@ const commands = {
       process.exit(2)
     }
 
-    const todos = await readDatabase()
-    const newTodos = [...todos, description]
-    const index = newTodos.length - 1
-
-    await writeDatabase(newTodos)
-    printTodo(description, index)
-    process.exit(0)
+    const newTodo = await createTodo({ description })
+    printTodo(newTodo)
   },
   list: async () => {
-    const todos = await readDatabase()
+    const todos = await readTodos()
 
     todos.forEach(printTodo)
-    process.exit(0)
   },
-  delete: async (rawIndex) => {
-    const index = Number.parseInt(rawIndex, 10)
-    const todos = await readDatabase()
-    const todo = todos[index]
+  delete: async (rawTodoId) => {
+    const todoId = parseTodoId(rawTodoId)
+    const todo = await deleteTodo(todoId)
 
     if (!todo) {
-      console.error(
-        `Error: missing or invalid index (must be 0-${todos.length - 1})`,
-      )
+      console.error(`Error: no such todo (ID=${todoId})`)
       process.exit(2)
     }
 
-    const newTodos = todos.filter((_, i) => i !== index)
+    printTodo(todo)
+  },
+  toggle: async (rawTodoId) => {
+    const todoId = parseTodoId(rawTodoId)
+    const todo = await readTodo(todoId)
 
-    await writeDatabase(newTodos)
-    printTodo(todo, index)
-    process.exit(0)
+    if (!todo) {
+      console.error(`Error: no such todo (ID=${todoId})`)
+      process.exit(2)
+    }
+
+    const updatedTodo = await updateTodo(todoId, { isDone: !todo.isDone })
+
+    printTodo(updatedTodo)
   },
 }
 const command = commands[commandName]
@@ -58,3 +74,4 @@ if (!command) {
 }
 
 await command(...args)
+process.exit(0)

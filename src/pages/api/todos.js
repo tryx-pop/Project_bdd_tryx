@@ -1,12 +1,11 @@
-import { readDatabase } from "@/db/readDatabase"
-import { writeDatabase } from "@/db/writeDatabase"
+import { createTodo, readTodos } from "@/db/crud"
 
 const handle = async (req, res) => {
-  const db = await readDatabase()
-
   // Read (collection) => GET /todos
   if (req.method === "GET") {
-    res.send(Object.values(db.todos))
+    const todos = await readTodos()
+
+    res.send(todos)
 
     return
   }
@@ -21,21 +20,8 @@ const handle = async (req, res) => {
       return
     }
 
-    const newLastId = db.lastId + 1
-    const newTodo = {
-      id: newLastId,
-      description,
-      isDone: false,
-    }
+    const newTodo = await createTodo({ description })
 
-    await writeDatabase({
-      ...db,
-      lastId: newLastId,
-      todos: {
-        ...db.todos,
-        [newLastId]: newTodo,
-      },
-    })
     res.send(newTodo)
 
     return

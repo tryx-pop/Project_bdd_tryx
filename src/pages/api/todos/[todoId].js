@@ -1,19 +1,18 @@
-import { readDatabase } from "@/db/readDatabase"
-import { writeDatabase } from "@/db/writeDatabase"
+import { deleteTodo, readTodo, updateTodo } from "@/db/crud"
 
 const handle = async (req, res) => {
   const todoId = Number.parseInt(req.query.todoId, 10)
-  const db = await readDatabase()
-  const todo = db.todos[todoId]
-
-  if (!todo) {
-    res.status(404).send({ error: "Not found" })
-
-    return
-  }
 
   // Read (item) => GET /todos/:todoId
   if (req.method === "GET") {
+    const todo = await readTodo(todoId)
+
+    if (!todo) {
+      res.status(404).send({ error: "Not found" })
+
+      return
+    }
+
     res.send(todo)
 
     return
@@ -21,21 +20,16 @@ const handle = async (req, res) => {
 
   // Update (item) => PATCH /todos/:todoId
   if (req.method === "PATCH") {
-    const description = req.body.description?.trim() || todo.description
-    const isDone = req.body.isDone ?? todo.isDone
-    const updatedTodo = {
-      ...todo,
-      description,
-      isDone,
+    const description = req.body.description?.trim()
+    const { isDone } = req.body
+    const updatedTodo = await updateTodo(todoId, { description, isDone })
+
+    if (!updatedTodo) {
+      res.status(404).send({ error: "Not found" })
+
+      return
     }
 
-    await writeDatabase({
-      ...db,
-      todos: {
-        ...db.todos,
-        [todoId]: updatedTodo,
-      },
-    })
     res.send(updatedTodo)
 
     return
@@ -43,14 +37,14 @@ const handle = async (req, res) => {
 
   // Delete (item) => DELETE /todos/:todoId
   if (req.method === "DELETE") {
-    const {
-      todos: { [todoId]: todoToBeDelete, ...todos },
-    } = db
+    const todoToBeDelete = await deleteTodo(todoId)
 
-    await writeDatabase({
-      ...db,
-      todos,
-    })
+    if (!todoToBeDelete) {
+      res.status(404).send({ error: "Not found" })
+
+      return
+    }
+
     res.send(todoToBeDelete)
 
     return
