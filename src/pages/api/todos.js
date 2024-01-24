@@ -16,6 +16,7 @@ const handle = async (req, res) => {
     return
   }
 
+  // Create (item) => POST /todos
   if (req.method === "POST") {
     const description = req.body.description.trim()
 

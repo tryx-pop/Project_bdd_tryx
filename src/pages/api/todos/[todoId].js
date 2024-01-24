@@ -1,4 +1,5 @@
 import { readDatabase } from "@/db/readDatabase"
+import { writeDatabase } from "@/db/writeDatabase"
 
 const handle = async (req, res) => {
   const todoId = Number.parseInt(req.query.todoId, 10)
@@ -11,20 +12,46 @@ const handle = async (req, res) => {
     return
   }
 
+  // Read (item) => GET /todos/:todoId
   if (req.method === "GET") {
-    res.send()
+    res.send({
+      id: todoId,
+      description: todo,
+    })
 
     return
   }
 
+  // Update (item) => PATCH /todos/:todoId
   if (req.method === "PATCH") {
-    res.send()
+    const description = req.body.description.trim()
+
+    if (!description) {
+      res.status(422).send({ error: "Invalid argument `description`" })
+
+      return
+    }
+
+    const newTodos = todos.with(todoId, description)
+
+    await writeDatabase(newTodos)
+    res.send({
+      index: todoId,
+      description,
+    })
 
     return
   }
 
+  // Delete (item) => DELETE /todos/:todoId
   if (req.method === "DELETE") {
-    res.send()
+    const newTodos = todos.filter((_, index) => index !== todoId)
+
+    await writeDatabase(newTodos)
+    res.send({
+      id: todoId,
+      description: todo,
+    })
 
     return
   }
