@@ -1,12 +1,7 @@
 /* eslint-disable no-console */
+import axios from "axios"
 import chalk from "chalk"
-import {
-  createTodo,
-  deleteTodo,
-  readTodo,
-  readTodos,
-  updateTodo,
-} from "./db/crud.js"
+import { deleteTodo, readTodo, readTodos, updateTodo } from "./db/crud.js"
 
 const parseTodoId = (rawTodoId) => {
   const todoId = Number.parseInt(rawTodoId, 10)
@@ -33,7 +28,12 @@ const commands = {
       process.exit(2)
     }
 
-    const newTodo = await createTodo({ description })
+    const { data: newTodo } = await axios.post(
+      "http://localhost:3000/api/todos",
+      {
+        description,
+      },
+    )
     printTodo(newTodo)
   },
   list: async () => {

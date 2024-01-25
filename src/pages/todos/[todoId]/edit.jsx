@@ -4,31 +4,34 @@ import { FormField } from "@/components/FormField"
 import { descriptionValidator, isDoneValidator } from "@/validators"
 import axios from "axios"
 import { Formik } from "formik"
+import { useRouter } from "next/router"
 import * as yup from "yup"
 
-const initialValues = {
-  description: "",
-  isDone: false,
+export const getServerSideProps = async ({ query: { todoId } }) => {
+  const { data: todo } = await axios(
+    `http://localhost:3000/api/todos/${todoId}`,
+  )
+
+  return { props: { todo } }
 }
 const validationSchema = yup.object({
   description: descriptionValidator,
   isDone: isDoneValidator,
 })
-const CreateTodoPage = () => {
-  const handleSubmit = async ({ description, isDone }, { resetForm }) => {
-    await axios.post("http://localhost:3000/api/todos", {
-      description,
-      isDone,
-    })
+const TodoEditPage = ({ todo }) => {
+  const router = useRouter()
+  const initialValues = todo
+  const handleSubmit = async (values) => {
+    await axios.patch(`http://localhost:3000/api/todos/${todo.id}`, values)
 
-    resetForm()
+    router.push("/todos")
   }
 
   return (
     <Formik
       initialValues={initialValues}
-      onSubmit={handleSubmit}
       validationSchema={validationSchema}
+      onSubmit={handleSubmit}
     >
       <Form>
         <FormField
@@ -42,10 +45,10 @@ const CreateTodoPage = () => {
           type="checkbox"
           label="Done?"
         />
-        <Button type="submit">Create</Button>
+        <Button type="submit">Save</Button>
       </Form>
     </Formik>
   )
 }
 
-export default CreateTodoPage
+export default TodoEditPage

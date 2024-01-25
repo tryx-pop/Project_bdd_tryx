@@ -23,7 +23,9 @@ const handle = async (req, res) => {
 
     const newTodo = await createTodo({ description, isDone })
 
-    res.send(newTodo)
+    setTimeout(() => {
+      res.send(newTodo)
+    }, 3000)
 
     return
   }
