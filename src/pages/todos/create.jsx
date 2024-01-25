@@ -1,3 +1,4 @@
+import axios from "axios"
 import { ErrorMessage, Field, Form, Formik } from "formik"
 import * as yup from "yup"
 
@@ -9,8 +10,11 @@ const validationSchema = yup.object({
   description: yup.string().min(3).required().label("Description"),
 })
 const CreateTodoPage = () => {
-  const handleSubmit = (values, { resetForm }) => {
-    console.log(values)
+  const handleSubmit = async ({ description, isDone }, { resetForm }) => {
+    await axios.post("http://localhost:3000/api/todos", {
+      description,
+      isDone,
+    })
 
     resetForm()
   }

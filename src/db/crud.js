@@ -1,13 +1,13 @@
 import { readDatabase } from "./readDatabase.js"
 import { writeDatabase } from "./writeDatabase.js"
 
-export const createTodo = async ({ description }) => {
+export const createTodo = async ({ description, isDone = false }) => {
   const db = await readDatabase()
   const newLastId = db.lastId + 1
   const newTodo = {
     id: newLastId,
     description,
-    isDone: false,
+    isDone,
   }
 
   await writeDatabase({

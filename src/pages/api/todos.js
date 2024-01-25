@@ -13,6 +13,7 @@ const handle = async (req, res) => {
   // Create (item) => POST /todos
   if (req.method === "POST") {
     const description = req.body.description.trim()
+    const isDone = req.body.isDone || false
 
     if (!description) {
       res.status(422).send({ error: "missing description argument" })
@@ -20,7 +21,7 @@ const handle = async (req, res) => {
       return
     }
 
-    const newTodo = await createTodo({ description })
+    const newTodo = await createTodo({ description, isDone })
 
     res.send(newTodo)
 

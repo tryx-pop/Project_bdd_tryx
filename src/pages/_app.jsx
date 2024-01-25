@@ -1,4 +1,5 @@
 import "@/styles/globals.css"
+import Link from "next/link"
 
 const App = ({ Component, pageProps }) => (
   <main className="flex flex-col">
@@ -8,10 +9,10 @@ const App = ({ Component, pageProps }) => (
         <nav>
           <ul className="flex gap-4">
             <li>
-              <a href="/todos/create">Create</a>
+              <Link href="/todos/create">Create</Link>
             </li>
             <li>
-              <a href="/todos">List</a>
+              <Link href="/todos">List</Link>
             </li>
           </ul>
         </nav>

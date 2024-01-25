@@ -11,7 +11,7 @@ const TodosPage = ({ todos }) => (
   <ul className="flex flex-col gap-4">
     {todos.map(({ id, description, isDone }) => (
       <li key={id}>
-        <input type="checkbox" checked={isDone} /> #{id} {description}
+        <input type="checkbox" defaultChecked={isDone} /> #{id} {description}
       </li>
     ))}
   </ul>
