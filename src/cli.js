@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 import axios from "axios"
 import chalk from "chalk"
-import { deleteTodo, readTodo, readTodos, updateTodo } from "./db/crud.js"
 
 const parseTodoId = (rawTodoId) => {
   const todoId = Number.parseInt(rawTodoId, 10)
@@ -37,33 +36,41 @@ const commands = {
     printTodo(newTodo)
   },
   list: async () => {
-    const todos = await readTodos()
+    const { data: todos } = await axios("http://localhost:3000/api/todos")
 
     todos.forEach(printTodo)
   },
   delete: async (rawTodoId) => {
     const todoId = parseTodoId(rawTodoId)
-    const todo = await deleteTodo(todoId)
 
-    if (!todo) {
+    try {
+      const { data: todo } = await axios.delete(
+        `http://localhost:3000/api/todos/${todoId}`,
+      )
+
+      printTodo(todo)
+    } catch (err) {
       console.error(`Error: no such todo (ID=${todoId})`)
       process.exit(2)
     }
-
-    printTodo(todo)
   },
   toggle: async (rawTodoId) => {
     const todoId = parseTodoId(rawTodoId)
-    const todo = await readTodo(todoId)
 
-    if (!todo) {
+    try {
+      const { data: todo } = await axios(
+        `http://localhost:3000/api/todos/${todoId}`,
+      )
+      const { data: updatedTodo } = await axios.patch(
+        `http://localhost:3000/api/todos/${todoId}`,
+        { isDone: !todo.isDone },
+      )
+
+      printTodo(updatedTodo)
+    } catch (err) {
       console.error(`Error: no such todo (ID=${todoId})`)
       process.exit(2)
     }
-
-    const updatedTodo = await updateTodo(todoId, { isDone: !todo.isDone })
-
-    printTodo(updatedTodo)
   },
 }
 const command = commands[commandName]
