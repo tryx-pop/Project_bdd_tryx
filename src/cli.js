@@ -2,16 +2,6 @@
 import axios from "axios"
 import chalk from "chalk"
 
-const parseTodoId = (rawTodoId) => {
-  const todoId = Number.parseInt(rawTodoId, 10)
-
-  if (!todoId) {
-    console.error("Error: missing todo ID")
-    process.exit(2)
-  }
-
-  return todoId
-}
 const formatTodo = ({ _id, description, isDone }) =>
   (isDone ? chalk.strikethrough : (x) => x)(
     `${chalk.bgBlue(` ${String(_id).padStart(4, " ")} `)} ${description}`,
@@ -40,9 +30,7 @@ const commands = {
 
     todos.forEach(printTodo)
   },
-  delete: async (rawTodoId) => {
-    const todoId = parseTodoId(rawTodoId)
-
+  delete: async (todoId) => {
     try {
       const { data: todo } = await axios.delete(
         `http://localhost:3000/api/todos/${todoId}`,
@@ -54,9 +42,7 @@ const commands = {
       process.exit(2)
     }
   },
-  toggle: async (rawTodoId) => {
-    const todoId = parseTodoId(rawTodoId)
-
+  toggle: async (todoId) => {
     try {
       const { data: todo } = await axios(
         `http://localhost:3000/api/todos/${todoId}`,

@@ -2,7 +2,7 @@ import { mw } from "@/api/mw"
 import { deleteTodo, readTodo, updateTodo } from "@/db/crud"
 
 const handle = mw(async (req, res) => {
-  const todoId = Number.parseInt(req.query.todoId, 10)
+  const { todoId } = req.query
 
   // Read (item) => GET /todos/:todoId
   if (req.method === "GET") {

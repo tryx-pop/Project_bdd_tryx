@@ -1,12 +1,11 @@
 import { Button } from "@/components/Button"
-import { readDatabase } from "@/db/readDatabase"
 import axios from "axios"
 import clsx from "clsx"
 import Link from "next/link"
 import { useState } from "react"
 
 export const getServerSideProps = async () => {
-  const { todos } = await readDatabase()
+  const { todos } = await axios("http://localhost:3000/api/todos")
 
   return {
     props: { initialTodos: Object.values(todos) },
@@ -29,10 +28,10 @@ const TodosPage = ({ initialTodos }) => {
   return (
     <ul className="flex flex-col gap-4">
       {todos.map(({ id, description, isDone }) => (
-        <li key={id} className="flex items-center gap-2 group">
+        <li key={id} className="group flex items-center gap-2">
           <Link href={`/todos/${id}/edit`} className="flex gap-2 py-1">
             <span
-              className={clsx("w-6 h-6 border border-green-500", {
+              className={clsx("h-6 w-6 border border-green-500", {
                 "bg-green-500": isDone,
               })}
             />{" "}
@@ -42,7 +41,7 @@ const TodosPage = ({ initialTodos }) => {
             onClick={handleDelete(id)}
             variant="danger"
             size="md"
-            className="group-hover:inline hidden"
+            className="hidden group-hover:inline"
           >
             DELETE
           </Button>

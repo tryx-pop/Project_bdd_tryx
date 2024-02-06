@@ -1,5 +1,3 @@
-import { readDatabase } from "./readDatabase.js"
-import { writeDatabase } from "./writeDatabase.js"
 import { TodoModel } from "./models/TodoModel.js"
 
 export const createTodo = async ({ description, isDone = false }) => {
@@ -10,49 +8,27 @@ export const createTodo = async ({ description, isDone = false }) => {
   return newTodo
 }
 export const readTodos = async () => await TodoModel.find()
-export const readTodo = async (todoId) => {
-  const {
-    todos: { [todoId]: todo },
-  } = await readDatabase()
-
-  return todo || null
-}
+export const readTodo = async (todoId) => await TodoModel.findById(todoId)
 export const updateTodo = async (
   todoId,
   { description = "", isDone = false },
 ) => {
-  const db = await readDatabase()
-  const todo = db.todos[todoId]
-  const updatedTodo = {
-    ...todo,
-    description: description.trim() || todo.description,
-    isDone: isDone ?? todo.isDone,
+  const input = {
+    description: description.trim() || undefined,
+    isDone: isDone ?? undefined,
   }
-
-  await writeDatabase({
-    ...db,
-    todos: {
-      ...db.todos,
-      [todoId]: updatedTodo,
-    },
+  const updatedTodo = await TodoModel.findByIdAndUpdate(todoId, input, {
+    returnDocument: "after",
   })
 
   return updatedTodo
 }
 export const deleteTodo = async (todoId) => {
-  const db = await readDatabase()
-  const {
-    todos: { [todoId]: todo, ...todos },
-  } = db
+  const todo = await TodoModel.findOneAndDelete({ _id: todoId })
 
   if (!todo) {
     return null
   }
-
-  await writeDatabase({
-    ...db,
-    todos,
-  })
 
   return todo
 }
