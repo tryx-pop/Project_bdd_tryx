@@ -1,6 +1,7 @@
+import { mw } from "@/api/mw"
 import { createTodo, readTodos } from "@/db/crud"
 
-const handle = async (req, res) => {
+const handle = mw(async (req, res) => {
   // Read (collection) => GET /todos
   if (req.method === "GET") {
     const todos = await readTodos()
@@ -23,14 +24,12 @@ const handle = async (req, res) => {
 
     const newTodo = await createTodo({ description, isDone })
 
-    setTimeout(() => {
-      res.send(newTodo)
-    }, 3000)
+    res.send(newTodo)
 
     return
   }
 
   res.status(404).send({ error: "Not found" })
-}
+})
 
 export default handle

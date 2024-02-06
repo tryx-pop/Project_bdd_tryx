@@ -1,6 +1,7 @@
+import { mw } from "@/api/mw"
 import { deleteTodo, readTodo, updateTodo } from "@/db/crud"
 
-const handle = async (req, res) => {
+const handle = mw(async (req, res) => {
   const todoId = Number.parseInt(req.query.todoId, 10)
 
   // Read (item) => GET /todos/:todoId
@@ -51,6 +52,6 @@ const handle = async (req, res) => {
   }
 
   res.status(404).send({ error: "Not found" })
-}
+})
 
 export default handle

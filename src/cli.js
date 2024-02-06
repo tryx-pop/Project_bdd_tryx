@@ -12,9 +12,9 @@ const parseTodoId = (rawTodoId) => {
 
   return todoId
 }
-const formatTodo = ({ id, description, isDone }) =>
+const formatTodo = ({ _id, description, isDone }) =>
   (isDone ? chalk.strikethrough : (x) => x)(
-    `${chalk.bgBlue(` ${String(id).padStart(4, " ")} `)} ${description}`,
+    `${chalk.bgBlue(` ${String(_id).padStart(4, " ")} `)} ${description}`,
   )
 const printTodo = (todo) => console.log(formatTodo(todo))
 const [commandName, ...args] = process.argv.slice(2)

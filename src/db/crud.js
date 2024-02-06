@@ -1,31 +1,15 @@
 import { readDatabase } from "./readDatabase.js"
 import { writeDatabase } from "./writeDatabase.js"
+import { TodoModel } from "./models/TodoModel.js"
 
 export const createTodo = async ({ description, isDone = false }) => {
-  const db = await readDatabase()
-  const newLastId = db.lastId + 1
-  const newTodo = {
-    id: newLastId,
-    description,
-    isDone,
-  }
+  const newTodo = new TodoModel({ description, isDone })
 
-  await writeDatabase({
-    ...db,
-    lastId: newLastId,
-    todos: {
-      ...db.todos,
-      [newLastId]: newTodo,
-    },
-  })
+  await newTodo.save()
 
   return newTodo
 }
-export const readTodos = async () => {
-  const { todos } = await readDatabase()
-
-  return Object.values(todos)
-}
+export const readTodos = async () => await TodoModel.find()
 export const readTodo = async (todoId) => {
   const {
     todos: { [todoId]: todo },
