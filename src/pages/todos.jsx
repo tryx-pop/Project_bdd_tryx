@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useState } from "react"
 
 export const getServerSideProps = async () => {
-  const { todos } = await axios("http://localhost:3000/api/todos")
+  const {data: todos } = await axios("http://localhost:3000/api/todos")
 
   return {
     props: { initialTodos: Object.values(todos) },
@@ -14,9 +14,10 @@ export const getServerSideProps = async () => {
 const TodosPage = ({ initialTodos }) => {
   const [todos, setTodos] = useState(initialTodos)
   const handleDelete = (todoId) => async () => {
-    const deletedTodo = todos.find(({ id }) => id === todoId)
-    const newTodos = todos.filter(({ id }) => id !== todoId)
+    const deletedTodo = todos.find(({ _id }) => _id === todoId)
+    const newTodos = todos.filter(({ _id }) => _id !== todoId)
     setTodos(newTodos)
+    console.log(newTodos);
 
     try {
       await axios.delete(`http://localhost:3000/api/todos/${todoId}`)
@@ -27,18 +28,18 @@ const TodosPage = ({ initialTodos }) => {
 
   return (
     <ul className="flex flex-col gap-4">
-      {todos.map(({ id, description, isDone }) => (
-        <li key={id} className="group flex items-center gap-2">
-          <Link href={`/todos/${id}/edit`} className="flex gap-2 py-1">
+      {todos.map(({ _id, description, isDone }) => (
+        <li key={_id} className="group flex items-center gap-2">
+          <Link href={`/todos/${_id}/edit`} className="flex gap-2 py-1">
             <span
               className={clsx("h-6 w-6 border border-green-500", {
                 "bg-green-500": isDone,
               })}
             />{" "}
-            #{id} {description}
+            {description}
           </Link>
           <Button
-            onClick={handleDelete(id)}
+            onClick={handleDelete(_id)}
             variant="danger"
             size="md"
             className="hidden group-hover:inline"

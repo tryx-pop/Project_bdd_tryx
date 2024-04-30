@@ -1,7 +1,7 @@
 import { TodoModel } from "./models/TodoModel.js"
 
-export const createTodo = async ({ description, isDone = false }) => {
-  const newTodo = new TodoModel({ description, isDone })
+export const createTodo = async ({ description, isDone = false, codePostal, adresse, ville, pays }) => {
+  const newTodo = new TodoModel({ description, isDone, codePostal, adresse, ville, pays })
 
   await newTodo.save()
 
@@ -32,3 +32,5 @@ export const deleteTodo = async (todoId) => {
 
   return todo
 }
+
+

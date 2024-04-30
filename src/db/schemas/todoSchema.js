@@ -1,4 +1,5 @@
 import { Schema } from "mongoose"
+import { string } from "yup"
 
 export const todoSchema = new Schema({
   description: {
@@ -9,4 +10,20 @@ export const todoSchema = new Schema({
     type: Boolean,
     required: true,
   },
+  codePostal: {
+    type: String,
+    required: true,
+  },
+  ville: {
+    type: String,
+    required: true,
+  },
+  pays: {
+    type: String,
+    required: true,
+  },
+  adresse: {
+    type: String,
+    required: true,
+  }
 })

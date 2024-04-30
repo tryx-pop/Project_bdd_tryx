@@ -22,7 +22,8 @@ const TodoEditPage = ({ todo }) => {
   const router = useRouter()
   const initialValues = todo
   const handleSubmit = async (values) => {
-    await axios.patch(`http://localhost:3000/api/todos/${todo.id}`, values)
+    // eslint-disable-next-line no-underscore-dangle
+    await axios.patch(`http://localhost:3000/api/todos/${todo._id}`, values)
 
     router.push("/todos")
   }
