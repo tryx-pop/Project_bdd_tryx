@@ -13,17 +13,7 @@ const handle = mw(async (req, res) => {
 
   // Create (item) => POST /todos
   if (req.method === "POST") {
-    const description = req.body.description.trim()
-    const isDone = req.body.isDone || false
-    const codePostal = req.body.codePostal || null
-
-    if (!description) {
-      res.status(422).send({ error: "missing description argument" })
-
-      return
-    }
-    
-    const newTodo = await createTodo({ description, isDone, codePostal})
+    const newTodo = await createTodo(req.body)
     
     res.send(newTodo)
 

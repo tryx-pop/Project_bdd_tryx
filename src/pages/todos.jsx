@@ -17,8 +17,7 @@ const TodosPage = ({ initialTodos }) => {
     const deletedTodo = todos.find(({ _id }) => _id === todoId)
     const newTodos = todos.filter(({ _id }) => _id !== todoId)
     setTodos(newTodos)
-    console.log(newTodos);
-
+    
     try {
       await axios.delete(`http://localhost:3000/api/todos/${todoId}`)
     } catch (err) {
@@ -28,7 +27,7 @@ const TodosPage = ({ initialTodos }) => {
 
   return (
     <ul className="flex flex-col gap-4">
-      {todos.map(({ _id, description, isDone }) => (
+      {todos.map(({ _id, nom, isDone }) => (
         <li key={_id} className="group flex items-center gap-2">
           <Link href={`/todos/${_id}/edit`} className="flex gap-2 py-1">
             <span
@@ -36,7 +35,7 @@ const TodosPage = ({ initialTodos }) => {
                 "bg-green-500": isDone,
               })}
             />{" "}
-            {description}
+            {nom}
           </Link>
           <Button
             onClick={handleDelete(_id)}

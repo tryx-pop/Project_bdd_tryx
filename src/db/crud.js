@@ -1,7 +1,7 @@
 import { TodoModel } from "./models/TodoModel.js"
 
-export const createTodo = async ({ description, isDone = false, codePostal, adresse, ville, pays }) => {
-  const newTodo = new TodoModel({ description, isDone, codePostal, adresse, ville, pays })
+export const createTodo = async (todo) => {
+  const newTodo = new TodoModel(todo)
 
   await newTodo.save()
 
@@ -11,12 +11,8 @@ export const readTodos = async () => await TodoModel.find()
 export const readTodo = async (todoId) => await TodoModel.findById(todoId)
 export const updateTodo = async (
   todoId,
-  { description = "", isDone = false },
+  input,
 ) => {
-  const input = {
-    description: description.trim() || undefined,
-    isDone: isDone ?? undefined,
-  }
   const updatedTodo = await TodoModel.findByIdAndUpdate(todoId, input, {
     returnDocument: "after",
   })

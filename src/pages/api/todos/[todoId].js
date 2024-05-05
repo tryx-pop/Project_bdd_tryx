@@ -21,9 +21,7 @@ const handle = mw(async (req, res) => {
 
   // Update (item) => PATCH /todos/:todoId
   if (req.method === "PATCH") {
-    const description = req.body.description?.trim()
-    const { isDone } = req.body
-    const updatedTodo = await updateTodo(todoId, { description, isDone })
+    const updatedTodo = await updateTodo(todoId, req.body)
 
     if (!updatedTodo) {
       res.status(404).send({ error: "Not found" })
